@@ -4,6 +4,17 @@
 
 ScratchPad is a multi-notepad plugin for your DAW. Write notes, lyrics, chord progressions, or any text you need while producing music. All notes save with your DAW project.
 
+## Supported Platforms
+
+ScratchPad v0.0.24 builds as VST3 for macOS and Windows 11 with x64-compatible
+plugin hosts, and as AU for macOS. The Windows build includes an Inno Setup
+installer. Build outputs are staged under `builds/macOS/` and
+`builds/Windows/`; they are generated locally and are not included in the Git
+repository.
+
+See [docs/BUILD_README.md](./docs/BUILD_README.md) for build requirements and
+the Windows VM setup.
+
 ---
 
 ## Controls

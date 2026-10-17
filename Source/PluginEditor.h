@@ -295,6 +295,7 @@ private:
     std::unique_ptr<AboutPopup> aboutPopup_;
     std::unique_ptr<NLAPopup> nlaPopup_;
     std::unique_ptr<juce::AlertWindow> styleGuideWindow_;
+    std::unique_ptr<juce::FileChooser> exportFileChooser_;
     
     int lastCalculatedTabRows = 1;  // Track number of tab button rows
     

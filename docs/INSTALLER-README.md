@@ -2,165 +2,124 @@
 
 ## Overview
 
-The ScratchPad installer system creates professional macOS distribution packages (.pkg) and disk images (.dmg) for easy plugin installation and distribution.
+ScratchPad packages macOS plugins in a `.pkg` and `.dmg`, and the Windows
+VST3 in an `.exe` installer.
 
-## What Gets Built
+## Windows Installer
 
-### Installer Package (.pkg)
-- **VST3 Plugin**: Installs to `/Library/Audio/Plug-Ins/VST3/`
-- **AU Plugin**: Installs to `/Library/Audio/Plug-Ins/Components/`
+The combined `./Scripts/build.sh` pipeline builds the Windows x64 VST3 and
+creates `builds/Windows/ScratchPad_v{VERSION}_Windows.exe` on the Parallels
+Windows 11 VM. It uses native MSVC and Inno Setup 6; it does not need MinGW or
+Wine. SSH must be configured between the Mac and VM. See
+[BUILD_README.md](./BUILD_README.md) for the VM tool and connection
+requirements.
 
-### Disk Image (.dmg)
-Contains:
-- Installer package (.pkg)
-- Uninstaller app
-- Project `README.md`
+To build only the Windows plugin and installer, run on the Mac:
 
-## Building the Installer
-
-### Prerequisites
-- Xcode Command Line Tools (includes pkgbuild, productbuild, hdiutil, osacompile)
-- Built plugins in `build/ScratchpadPlugin_artefacts/Release/`
-
-### Step 1: Build the Plugin
 ```bash
-./Scripts/build.sh
+./Scripts/build_windows.sh
 ```
 
-### Step 2: Build the Installer Package
+The installer places the versioned VST3 under the system VST3 plugin folder
+and requests administrator privileges when a user runs it. The plugin and
+installer are currently unsigned.
+
+## macOS Installer
+
+### What Gets Built
+
+- **VST3 Plugin**: Installs to `/Library/Audio/Plug-Ins/VST3/`
+- **AU Plugin**: Installs to `/Library/Audio/Plug-Ins/Components/`
+- **Disk image**: Contains the package, uninstaller, and project README
+
+### Prerequisites
+
+- Xcode Command Line Tools (includes `pkgbuild`, `productbuild`, `hdiutil`,
+  and `osacompile`)
+- macOS plugins built in `build/macOS/ScratchpadPlugin_artefacts/Release/`
+
+### Build
+
+Build the macOS plugin targets:
+
+```bash
+./Scripts/build_macos.sh
+```
+
+Build the installer package:
+
 ```bash
 ./Scripts/build_installer.sh
 ```
 
-This creates: `exports/ScratchPad_v{VERSION}_macOS.pkg`
+Output: `exports/ScratchPad_v{VERSION}_macOS.pkg`
 
-### Step 3: Build the DMG
+Build the disk image:
+
 ```bash
 ./Scripts/build_dmg.sh
 ```
 
-This creates: `exports/ScratchPad_v{VERSION}_macOS.dmg`
+Output: `exports/ScratchPad_v{VERSION}_macOS.dmg`
 
-The DMG includes the project-root `README.md` as Markdown alongside the installer package and uninstaller app.
+The DMG includes the project-root `README.md` as Markdown alongside the
+installer package and uninstaller app.
 
-### Quick Build (All Steps)
-```bash
-./Scripts/build.sh && ./Scripts/build_installer.sh && ./Scripts/build_dmg.sh
-```
-
-## File Structure
+### macOS File Structure
 
 ```
-scratchpad/
-├── Scripts/
-│   ├── build_installer.sh        # Builds .pkg installer
-│   └── build_dmg.sh              # Builds .dmg with uninstaller
-│
-├── installer/
-│   ├── distribution.xml          # Installer configuration
-│   ├── welcome.html              # Welcome screen
-│   ├── license.html              # License agreement
-│   └── uninstaller/
-│       ├── uninstall.sh          # Uninstall logic
-│       └── UninstallerApp.applescript  # Uninstaller UI
-│
-└── exports/
-    ├── ScratchPad_v{VERSION}_macOS.pkg
-    └── ScratchPad_v{VERSION}_macOS.dmg
+Scripts/
+├── build_installer.sh
+└── build_dmg.sh
+
+installer/
+├── distribution.xml
+├── welcome.html
+├── license.html
+└── uninstaller/
+    ├── uninstall.sh
+    └── UninstallerApp.applescript
+
+exports/
+├── ScratchPad_v{VERSION}_macOS.pkg
+└── ScratchPad_v{VERSION}_macOS.dmg
 ```
 
-## Installer Features
+## Versioned Installation
 
-### Component Selection
-Users can choose whether to install the VST3 and AU plugin formats.
+Plugins are installed with version numbers so multiple versions can coexist:
 
-### Versioned Installation
-Plugins are installed with version numbers:
-- `nla_scratchpad_v{VERSION}.vst3`
-- `nla_scratchpad_v{VERSION}.component`
+- Windows: `nla_scratchpad_v{VERSION}.vst3`
+- macOS VST3: `nla_scratchpad_v{VERSION}.vst3`
+- macOS AU: `nla_scratchpad_v{VERSION}.component`
 
-This allows multiple versions to coexist if needed.
+## System Requirements
 
-### System Requirements
 - macOS 11.0 (Big Sur) or later
-- Administrator privileges for plugin installation
+- Windows 11 for the Windows installer
+- Administrator privileges to install system-wide
 
-## Uninstaller
+## macOS Uninstaller
 
-The uninstaller removes:
-- All installed VST3 plugins (versioned and current)
-- All installed AU plugins (versioned and current)
-
-### Using the Uninstaller
-1. Open the DMG
-2. Double-click "ScratchPad Uninstaller.app"
-3. Confirm uninstallation
-4. Enter admin password when prompted
+The macOS uninstaller removes installed VST3 and AU plugins. Open the DMG,
+launch "ScratchPad Uninstaller.app", confirm uninstallation, and enter the
+administrator password when prompted.
 
 ## Customization
 
-### Changing Version
-Version is automatically read from `CMakeLists.txt`:
+The version is read from the root `CMakeLists.txt`:
+
 ```cmake
-project(ScratchpadPlugin VERSION 0.0.24 LANGUAGES CXX)
+project(ScratchpadPlugin VERSION 0.0.24 LANGUAGES C CXX)
 ```
 
-### Updating Welcome/License Text
-Edit these files:
-- `installer/welcome.html`
-- `installer/license.html`
+Update macOS installer UI text in `installer/welcome.html` and
+`installer/license.html`. Change macOS install locations in
+`installer/distribution.xml` and `Scripts/build_installer.sh`. Change the
+Windows installer in `installer/windows/ScratchPad.iss`.
 
-### Modifying Install Locations
-Edit `installer/distribution.xml` and `Scripts/build_installer.sh`
+## Code Signing
 
-## Distribution
-
-### For End Users
-Distribute the `.dmg` file:
-- `ScratchPad_v{VERSION}_macOS.dmg`
-
-Users can:
-1. Mount the DMG
-2. Run the installer package
-3. Keep the uninstaller for later use
-4. Open `README.md` for project and usage information
-
-### For Testing
-Use the `.pkg` file directly:
-- `ScratchPad_v{VERSION}_macOS.pkg`
-
-## Troubleshooting
-
-### "Installer package not found"
-Run `./Scripts/build.sh` first to build the plugins.
-
-### Installer Won't Run
-Check that you have Xcode Command Line Tools:
-```bash
-xcode-select --install
-```
-
-### DMG Won't Mount
-Verify the DMG integrity:
-```bash
-hdiutil verify exports/ScratchPad_v{VERSION}_macOS.dmg
-```
-
-## Technical Details
-
-### Code Signing
-Plugins are ad-hoc signed during installer build:
-```bash
-codesign --force --sign - --timestamp=none [plugin]
-```
-
-For distribution, replace with proper Developer ID signing.
-
-### Compression
-DMG uses UDZO format with zlib level 9 compression for optimal size.
-
-## Version History
-
-### v0.0.23 (May 27, 2026)
-- Initial installer system implementation
-- Includes .pkg installer, .dmg distribution, and uninstaller app
+macOS packages use ad-hoc plugin signatures during installer packaging. Replace
+these with Developer ID signing for distribution. Windows artifacts are
+currently unsigned; signing support is deferred.

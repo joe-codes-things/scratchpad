@@ -16,3 +16,20 @@
 *.swp
 *.user
 cmake-* 
+
+# Local-only Windows VM connection configuration
+/.windows-vm.env
+
+# Private key and secret-bearing environment files
+/.ssh/
+/.env
+/.env.*
+!/.env.example
+**/id_rsa
+**/id_ed25519
+**/id_ecdsa
+**/*.key
+**/*.ppk
+**/*.pem
+**/*.p12
+**/*.pfx

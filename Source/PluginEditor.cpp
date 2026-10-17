@@ -1,6 +1,5 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "NativeFileChooser.h"
 
 NotepadPluginAudioProcessorEditor::NotepadPluginAudioProcessorEditor (NotepadPluginAudioProcessor& p)
     : AudioProcessorEditor (p), processorRef (p)
@@ -487,18 +486,40 @@ void NotepadPluginAudioProcessorEditor::exportCurrentTab()
         juce::String fileName = tabName + ".txt";
         fileName = fileName.replaceCharacters ("<>:\"|?*", "_");
         
-        if (showNativeSaveDialog (fileName, fileContent))
-        {
-            juce::AlertWindow::showMessageBoxAsync (
-                juce::AlertWindow::InfoIcon,
-                "Export Successful",
-                "Your note has been exported."
-            );
-        }
-        else
-        {
-            // User cancelled or error occurred
-        }
+        auto initialFile = juce::File::getSpecialLocation (juce::File::userDocumentsDirectory)
+                               .getChildFile (fileName);
+        exportFileChooser_ = std::make_unique<juce::FileChooser> (
+            "Export current notepad as text file", initialFile, "*.txt");
+
+        juce::Component::SafePointer<NotepadPluginAudioProcessorEditor> safeThis (this);
+        exportFileChooser_->launchAsync (
+            juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
+            [safeThis, fileContent] (const juce::FileChooser& chooser)
+            {
+                auto selectedFile = chooser.getResult();
+                if (auto* editor = safeThis.getComponent())
+                {
+                    editor->exportFileChooser_.reset();
+
+                    if (selectedFile.getFullPathName().isEmpty())
+                        return;
+
+                    if (selectedFile.replaceWithText (fileContent))
+                    {
+                        juce::AlertWindow::showMessageBoxAsync (
+                            juce::AlertWindow::InfoIcon,
+                            "Export Successful",
+                            "Your note has been exported.");
+                    }
+                    else
+                    {
+                        juce::AlertWindow::showMessageBoxAsync (
+                            juce::AlertWindow::WarningIcon,
+                            "Export Failed",
+                            "The note could not be saved to the selected file.");
+                    }
+                }
+            });
     }
 }
 
