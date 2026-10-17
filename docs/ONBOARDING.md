@@ -8,7 +8,7 @@ export. The plugin formats are VST3 and Audio Unit (AU).
 
 - Product name: `ScratchPad`
 - CMake project: `ScratchpadPlugin`
-- Version: `0.0.23` (from the root `CMakeLists.txt`)
+- Version: `0.0.24` (from the root `CMakeLists.txt`)
 - Language standard: C++17
 - JUCE dependency: `JUCE_framework/` Git submodule
 

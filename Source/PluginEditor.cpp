@@ -632,7 +632,7 @@ void NotepadPluginAudioProcessorEditor::showAboutPopup()
         architecture = "Unknown";
     #endif
     
-    juce::String version = JucePlugin_VersionString;
+    juce::String version = "v" + juce::String (JucePlugin_VersionString);
     juce::String buildDate = __DATE__;
     
     aboutPopup_ = std::make_unique<AboutPopup> (pluginFormat, architecture, version, buildDate);

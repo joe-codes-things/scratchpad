@@ -102,7 +102,7 @@ The uninstaller removes:
 ### Changing Version
 Version is automatically read from `CMakeLists.txt`:
 ```cmake
-project(ScratchpadPlugin VERSION 0.0.23 LANGUAGES CXX)
+project(ScratchpadPlugin VERSION 0.0.24 LANGUAGES CXX)
 ```
 
 ### Updating Welcome/License Text

@@ -1,5 +1,9 @@
 # ScratchPad Plugin Changelog
 
+## v0.0.24 (2026-10-16)
+- Updated the release version and refreshed VST3, AU, PKG, and DMG artifacts.
+- Updated README version and branding.
+
 ## v0.0.23 (2026-05-27)
 ### Final UI Polish
 - **Gear button hover**: Removed elliptical glow artifact — gear icon now simply brightens on hover, matching the "Nine Lives Audio" label behavior

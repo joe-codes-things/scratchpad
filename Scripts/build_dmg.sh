@@ -112,6 +112,7 @@ hdiutil create \
 
 # Convert to compressed read-only DMG
 hdiutil convert "$TEMP_DMG" \
+    -ov \
     -format UDZO \
     -imagekey zlib-level=9 \
     -o "$FINAL_DMG"

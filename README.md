@@ -77,6 +77,6 @@ ScratchPad is a multi-notepad plugin for your DAW. Write notes, lyrics, chord pr
 
 ---
 
-**Version**: v0.0.23
+**Version**: v0.0.24
 
 **Made with care by Nine Lives Audio**
