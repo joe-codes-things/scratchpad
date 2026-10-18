@@ -43,3 +43,10 @@ privileges, or change system plugin directories.
 Change the plugin version in the root `CMakeLists.txt` when preparing a
 release. See [BUILD_README.md](./BUILD_README.md) for build details and
 [INSTALLER-README.md](./INSTALLER-README.md) for distribution packages.
+
+## Bug Reporting Convention
+
+When adding or updating reported bugs, maintain [`BUGS.md`](./BUGS.md). Assign
+each new entry the next unused sequential identifier in the form `B001`,
+`B002`, and so on. Never reuse or renumber IDs; move resolved entries to the
+Resolved Bugs section instead of deleting them.
