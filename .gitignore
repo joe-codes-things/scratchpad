@@ -9,6 +9,7 @@
 !/exports/production-builds/.gitkeep
 /exports/development-builds/**
 !/exports/development-builds/.gitkeep
+/.github/
 /installer_work/
 /dmg_work/
 /daw-testing-mac/
