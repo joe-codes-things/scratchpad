@@ -27,8 +27,8 @@ juce_add_plugin(ScratchpadPlugin
     VST3_CATEGORIES "Utility")
 
 target_sources(ScratchpadPlugin PRIVATE
-    Source/PluginProcessor.cpp
-    Source/PluginEditor.cpp)
+    source/PluginProcessor.cpp
+    source/PluginEditor.cpp)
 
 target_compile_features(ScratchpadPlugin PRIVATE cxx_std_17)
 

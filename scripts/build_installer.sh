@@ -8,7 +8,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$PROJECT_DIR/build/macOS"
-EXPORTS_DIR="$PROJECT_DIR/exports"
+PRODUCTION_OUTPUT_DIR="$PROJECT_DIR/exports/production-builds/macOS"
 INSTALLER_DIR="$PROJECT_DIR/installer"
 WORK_DIR="$PROJECT_DIR/installer_work"  # scratch space, cleaned up after
 
@@ -39,14 +39,14 @@ echo ""
 if [ ! -d "$VST3_SRC" ]; then
     echo -e "${RED}Error: VST3 plugin not found at:${NC}"
     echo "  $VST3_SRC"
-    echo "Run ./Scripts/build_macos.sh first."
+    echo "Run ./scripts/build_macos.sh first."
     exit 1
 fi
 
 if [ ! -d "$AU_SRC" ]; then
     echo -e "${RED}Error: AU plugin not found at:${NC}"
     echo "  $AU_SRC"
-    echo "Run ./Scripts/build_macos.sh first."
+    echo "Run ./scripts/build_macos.sh first."
     exit 1
 fi
 
@@ -55,7 +55,7 @@ rm -rf "$WORK_DIR"
 mkdir -p "$WORK_DIR/vst3_payload/$VST3_DEST_DIR"
 mkdir -p "$WORK_DIR/au_payload/$AU_DEST_DIR"
 mkdir -p "$WORK_DIR/pkgs"
-mkdir -p "$EXPORTS_DIR"
+mkdir -p "$PRODUCTION_OUTPUT_DIR"
 
 # ── Sign plugins (ad-hoc) ────────────────────────────────────────────────────
 echo "Signing plugins..."
@@ -100,7 +100,7 @@ echo -e "${GREEN}AU component pkg built${NC}"
 # ── Build final product installer ────────────────────────────────────────────
 echo "Building final installer..."
 
-OUTPUT_PKG="$EXPORTS_DIR/${INSTALLER_NAME}.pkg"
+OUTPUT_PKG="$PRODUCTION_OUTPUT_DIR/${INSTALLER_NAME}.pkg"
 
 productbuild \
     --distribution "$INSTALLER_DIR/distribution.xml" \

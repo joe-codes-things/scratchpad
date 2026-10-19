@@ -25,7 +25,7 @@ From the repository root on the Mac:
 
 ```bash
 git submodule update --init --recursive
-./Scripts/build.sh
+./scripts/build.sh
 ```
 
 The script first checks the VM connection and its build tools, builds macOS
@@ -37,10 +37,14 @@ and JUCE, but use independent generated build state and outputs:
 - `build/Windows/transfer/` — temporary source-transfer staging on the Mac
 - `Coding Projects\ScratchPadBuild\source\build\Windows\x64\` under the VM
   user's profile — native Windows CMake state on the VM
-- `builds/macOS/nla_scratchpad.vst3`
-- `builds/macOS/nla_scratchpad.component`
-- `builds/Windows/nla_scratchpad.vst3`
-- `builds/Windows/ScratchPad_v{VERSION}_Windows.exe`
+- `exports/production-builds/macOS/nla_scratchpad.vst3`
+- `exports/production-builds/macOS/nla_scratchpad.component`
+- `exports/production-builds/Windows/nla_scratchpad.vst3`
+- `exports/production-builds/Windows/ScratchPad_v{VERSION}_Windows.exe`
+
+The current scripts generate release/production artifacts. Reserve
+`exports/development-builds/` for development artifacts; do not mix them with
+production outputs.
 
 The Windows installer installs the x64 VST3 to the system VST3 plug-in
 directory. The installer and plugin are unsigned. The build scripts do not
@@ -66,17 +70,17 @@ outside the repository and never add private-key contents to this file.
 Build just the local macOS plugins:
 
 ```bash
-./Scripts/build_macos.sh
+./scripts/build_macos.sh
 ```
 
 Build just the Windows plugin and installer through the VM:
 
 ```bash
-./Scripts/build_windows.sh
+./scripts/build_windows.sh
 ```
 
 To run the native Windows build directly in a source copy on the VM, execute
-`Scripts\build_windows.ps1` from PowerShell.
+`scripts\build_windows.ps1` from PowerShell.
 
 ## Clean Build
 
@@ -86,7 +90,7 @@ with:
 
 ```bash
 rm -rf build/macOS
-./Scripts/build_macos.sh
+./scripts/build_macos.sh
 ```
 
 The Windows CMake tree is in the VM user's
@@ -94,11 +98,13 @@ The Windows CMake tree is in the VM user's
 
 ## Project Layout
 
-- `Source/` — shared plugin processor and editor
+- `source/` — shared plugin processor and editor
 - `JUCE_framework/` — JUCE dependency
-- `Scripts/` — combined, per-platform, and installer build scripts
-- `Scripts/build_windows.ps1` — native MSVC and Inno Setup Windows build
+- `scripts/` — combined, per-platform, and installer build scripts
+- `scripts/build_windows.ps1` — native MSVC and Inno Setup Windows build
 - `installer/windows/` — Windows Inno Setup configuration
 - `build/macOS/` — local macOS generated build tree
-- `builds/macOS/`, `builds/Windows/` — staged platform artifacts
+- `exports/production-builds/macOS/`,
+  `exports/production-builds/Windows/` — staged production artifacts
+- `exports/development-builds/` — reserved for staged development artifacts
 - `docs/` — build and project documentation

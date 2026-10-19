@@ -8,7 +8,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-EXPORTS_DIR="$PROJECT_DIR/exports"
+PRODUCTION_OUTPUT_DIR="$PROJECT_DIR/exports/production-builds/macOS"
 INSTALLER_DIR="$PROJECT_DIR/installer"
 WORK_DIR="$PROJECT_DIR/dmg_work"
 
@@ -22,7 +22,7 @@ VERSION=$(grep "project(ScratchpadPlugin VERSION" "$PROJECT_DIR/CMakeLists.txt" 
 
 PKG_NAME="ScratchPad_v${VERSION}_macOS.pkg"
 DMG_NAME="ScratchPad_v${VERSION}_macOS.dmg"
-PKG_PATH="$EXPORTS_DIR/$PKG_NAME"
+PKG_PATH="$PRODUCTION_OUTPUT_DIR/$PKG_NAME"
 README_SRC="$PROJECT_DIR/README.md"
 
 echo "========================================="
@@ -35,7 +35,7 @@ echo ""
 if [ ! -f "$PKG_PATH" ]; then
     echo -e "${RED}Error: Installer pkg not found at:${NC}"
     echo "  $PKG_PATH"
-    echo "Run ./Scripts/build_installer.sh first."
+    echo "Run ./scripts/build_installer.sh first."
     exit 1
 fi
 
@@ -100,7 +100,7 @@ echo ""
 echo "Creating DMG..."
 
 TEMP_DMG="$WORK_DIR/temp.dmg"
-FINAL_DMG="$EXPORTS_DIR/$DMG_NAME"
+FINAL_DMG="$PRODUCTION_OUTPUT_DIR/$DMG_NAME"
 
 # Create a writable DMG from the staged folder
 hdiutil create \

@@ -6,7 +6,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BUILD_DIR="$PROJECT_ROOT/build/Windows/transfer"
-BUILDS_DIR="$PROJECT_ROOT/builds/Windows"
+PRODUCTION_OUTPUT_DIR="$PROJECT_ROOT/exports/production-builds/Windows"
 SOURCE_ARCHIVE="$BUILD_DIR/scratchpad-source.tar.gz"
 
 CONFIG_FILE="$PROJECT_ROOT/.windows-vm.env"
@@ -90,7 +90,7 @@ elif [[ "$#" -gt 0 ]]; then
     exit 2
 fi
 
-mkdir -p "$BUILD_DIR" "$BUILDS_DIR"
+mkdir -p "$BUILD_DIR" "$PRODUCTION_OUTPUT_DIR"
 REMOTE_TRANSFER_CREATED=0
 REMOTE_TRANSFER="ScratchPadBuild-transfer-$$-$RANDOM"
 REMOTE_CLEANUP_SCRIPT=$(cat <<'POWERSHELL'
@@ -117,7 +117,7 @@ trap cleanup EXIT
 tar -czf "$SOURCE_ARCHIVE" \
     --exclude='JUCE_framework/.git' \
     -C "$PROJECT_ROOT" \
-    CMakeLists.txt Source JUCE_framework installer/windows Scripts/build_windows.ps1
+    CMakeLists.txt source JUCE_framework installer/windows scripts/build_windows.ps1
 
 scp "${ssh_options[@]}" "$SOURCE_ARCHIVE" "$REMOTE:ScratchPadBuild-source.tar.gz"
 
@@ -129,13 +129,13 @@ New-Item -ItemType Directory -Path $workspace -Force | Out-Null
 & tar.exe -xzf $archive -C $workspace
 if ($LASTEXITCODE -ne 0) { throw "Could not extract the project source archive." }
 Remove-Item -LiteralPath $archive -Force
-$buildScript = Join-Path $workspace "Scripts\\build_windows.ps1"
+$buildScript = Join-Path $workspace "scripts\\build_windows.ps1"
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $buildScript
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $versionMatch = Select-String -Path (Join-Path $workspace "CMakeLists.txt") -Pattern '^project\(ScratchpadPlugin VERSION ([0-9]+\.[0-9]+\.[0-9]+)'
 if (-not $versionMatch) { throw "Could not read project version after the Windows build." }
 $version = $versionMatch.Matches[0].Groups[1].Value
-$artifacts = Join-Path $workspace "builds\Windows"
+$artifacts = Join-Path $workspace "exports\production-builds\Windows"
 $installer = Join-Path $artifacts "ScratchPad_v${version}_Windows.exe"
 $plugin = Join-Path $artifacts "nla_scratchpad.vst3"
 if (-not (Test-Path -LiteralPath $plugin -PathType Container) -or
@@ -163,21 +163,21 @@ if [[ -z "$VERSION" ]]; then
     exit 1
 fi
 
-INSTALLER="$BUILDS_DIR/ScratchPad_v${VERSION}_Windows.exe"
+INSTALLER="$PRODUCTION_OUTPUT_DIR/ScratchPad_v${VERSION}_Windows.exe"
 
-if [[ -d "$BUILDS_DIR/nla_scratchpad.vst3" ]]; then
-    rm -rf "$BUILDS_DIR/nla_scratchpad.vst3"
+if [[ -d "$PRODUCTION_OUTPUT_DIR/nla_scratchpad.vst3" ]]; then
+    rm -rf "$PRODUCTION_OUTPUT_DIR/nla_scratchpad.vst3"
 fi
 scp "${ssh_options[@]}" \
     -r "$REMOTE:$REMOTE_TRANSFER/nla_scratchpad.vst3" \
     "$REMOTE:$REMOTE_TRANSFER/ScratchPad_v${VERSION}_Windows.exe" \
-    "$BUILDS_DIR/"
+    "$PRODUCTION_OUTPUT_DIR/"
 
-if [[ ! -d "$BUILDS_DIR/nla_scratchpad.vst3" || ! -f "$INSTALLER" ]]; then
+if [[ ! -d "$PRODUCTION_OUTPUT_DIR/nla_scratchpad.vst3" || ! -f "$INSTALLER" ]]; then
     echo "Error: Expected Windows artifacts were not retrieved." >&2
     exit 1
 fi
 
 echo "Windows artifacts built in the Parallels VM:"
-echo "  VST3:      $BUILDS_DIR/nla_scratchpad.vst3"
+echo "  VST3:      $PRODUCTION_OUTPUT_DIR/nla_scratchpad.vst3"
 echo "  Installer: $INSTALLER"

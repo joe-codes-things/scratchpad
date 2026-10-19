@@ -7,17 +7,18 @@ VST3 in an `.exe` installer.
 
 ## Windows Installer
 
-The combined `./Scripts/build.sh` pipeline builds the Windows x64 VST3 and
-creates `builds/Windows/ScratchPad_v{VERSION}_Windows.exe` on the Parallels
-Windows 11 VM. It uses native MSVC and Inno Setup 6; it does not need MinGW or
-Wine. SSH must be configured between the Mac and VM. See
+The combined `./scripts/build.sh` pipeline builds the Windows x64 VST3 and
+creates
+`exports/production-builds/Windows/ScratchPad_v{VERSION}_Windows.exe` on the
+Parallels Windows 11 VM. It uses native MSVC and Inno Setup 6; it does not need
+MinGW or Wine. SSH must be configured between the Mac and VM. See
 [BUILD_README.md](./BUILD_README.md) for the VM tool and connection
 requirements.
 
 To build only the Windows plugin and installer, run on the Mac:
 
 ```bash
-./Scripts/build_windows.sh
+./scripts/build_windows.sh
 ```
 
 The installer places the versioned VST3 under the system VST3 plugin folder
@@ -43,24 +44,24 @@ installer are currently unsigned.
 Build the macOS plugin targets:
 
 ```bash
-./Scripts/build_macos.sh
+./scripts/build_macos.sh
 ```
 
 Build the installer package:
 
 ```bash
-./Scripts/build_installer.sh
+./scripts/build_installer.sh
 ```
 
-Output: `exports/ScratchPad_v{VERSION}_macOS.pkg`
+Output: `exports/production-builds/macOS/ScratchPad_v{VERSION}_macOS.pkg`
 
 Build the disk image:
 
 ```bash
-./Scripts/build_dmg.sh
+./scripts/build_dmg.sh
 ```
 
-Output: `exports/ScratchPad_v{VERSION}_macOS.dmg`
+Output: `exports/production-builds/macOS/ScratchPad_v{VERSION}_macOS.dmg`
 
 The DMG includes the project-root `README.md` as Markdown alongside the
 installer package and uninstaller app.
@@ -68,7 +69,7 @@ installer package and uninstaller app.
 ### macOS File Structure
 
 ```
-Scripts/
+scripts/
 ├── build_installer.sh
 └── build_dmg.sh
 
@@ -80,7 +81,7 @@ installer/
     ├── uninstall.sh
     └── UninstallerApp.applescript
 
-exports/
+exports/production-builds/macOS/
 ├── ScratchPad_v{VERSION}_macOS.pkg
 └── ScratchPad_v{VERSION}_macOS.dmg
 ```
@@ -115,7 +116,7 @@ project(ScratchpadPlugin VERSION 0.0.24 LANGUAGES C CXX)
 
 Update macOS installer UI text in `installer/welcome.html` and
 `installer/license.html`. Change macOS install locations in
-`installer/distribution.xml` and `Scripts/build_installer.sh`. Change the
+`installer/distribution.xml` and `scripts/build_installer.sh`. Change the
 Windows installer in `installer/windows/ScratchPad.iss`.
 
 ## Code Signing

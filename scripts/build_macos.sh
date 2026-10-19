@@ -6,7 +6,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BUILD_DIR="$PROJECT_ROOT/build/macOS"
-BUILDS_DIR="$PROJECT_ROOT/builds/macOS"
+PRODUCTION_OUTPUT_DIR="$PROJECT_ROOT/exports/production-builds/macOS"
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
     echo "Error: The macOS build requires macOS with Xcode." >&2
@@ -32,8 +32,8 @@ xcodebuild -project "$BUILD_DIR/ScratchpadPlugin.xcodeproj" \
 
 VST3_SRC="$BUILD_DIR/ScratchpadPlugin_artefacts/Release/VST3/ScratchPad.vst3"
 AU_SRC="$BUILD_DIR/ScratchpadPlugin_artefacts/Release/AU/ScratchPad.component"
-VST3_DEST="$BUILDS_DIR/nla_scratchpad.vst3"
-AU_DEST="$BUILDS_DIR/nla_scratchpad.component"
+VST3_DEST="$PRODUCTION_OUTPUT_DIR/nla_scratchpad.vst3"
+AU_DEST="$PRODUCTION_OUTPUT_DIR/nla_scratchpad.component"
 
 if [[ ! -d "$VST3_SRC" || ! -d "$AU_SRC" ]]; then
     echo "Error: Expected macOS plugin outputs were not produced." >&2
@@ -42,7 +42,7 @@ if [[ ! -d "$VST3_SRC" || ! -d "$AU_SRC" ]]; then
     exit 1
 fi
 
-mkdir -p "$BUILDS_DIR"
+mkdir -p "$PRODUCTION_OUTPUT_DIR"
 rm -rf "$VST3_DEST" "$AU_DEST"
 cp -R "$VST3_SRC" "$VST3_DEST"
 cp -R "$AU_SRC" "$AU_DEST"

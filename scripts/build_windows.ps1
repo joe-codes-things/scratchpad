@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $buildDir = Join-Path $projectRoot "build\Windows\x64"
-$artifactsDir = Join-Path $projectRoot "builds\Windows"
+$artifactsDir = Join-Path $projectRoot "exports\production-builds\Windows"
 $installerScript = Join-Path $projectRoot "installer\windows\ScratchPad.iss"
 $innoCompiler = Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 6\ISCC.exe"
 $cmake = (Get-Command cmake.exe -ErrorAction Stop).Source
