@@ -25,7 +25,7 @@ From the repository root on the Mac:
 
 ```bash
 git submodule update --init --recursive
-./scripts/build.sh
+./scripts/build.sh production
 ```
 
 The script first checks the VM connection and its build tools, builds macOS
@@ -37,14 +37,29 @@ and JUCE, but use independent generated build state and outputs:
 - `build/Windows/transfer/` — temporary source-transfer staging on the Mac
 - `Coding Projects\ScratchPadBuild\source\build\Windows\x64\` under the VM
   user's profile — native Windows CMake state on the VM
-- `exports/production-builds/macOS/nla_scratchpad.vst3`
-- `exports/production-builds/macOS/nla_scratchpad.component`
-- `exports/production-builds/Windows/nla_scratchpad.vst3`
-- `exports/production-builds/Windows/ScratchPad_v{VERSION}_Windows.exe`
+- `exports/production-builds/macOS/v{VERSION}/nla_scratchpad.vst3`
+- `exports/production-builds/macOS/v{VERSION}/nla_scratchpad.component`
+- `exports/production-builds/Windows/v{VERSION}/nla_scratchpad.vst3`
+- `exports/production-builds/Windows/v{VERSION}/ScratchPad_v{VERSION}_Windows.exe`
 
-The current scripts generate release/production artifacts. Reserve
-`exports/development-builds/` for development artifacts; do not mix them with
-production outputs.
+Use `./scripts/build.sh development` to build Debug plugins on both platforms.
+This stages VST3 and AU development plugins under
+`exports/development-builds/{platform}/v{VERSION}/`; no installer is produced.
+The production pipeline uses Release configuration and writes only beneath
+`exports/production-builds/`. If the versioned destination already exists, a
+build stops rather than overwriting it. Increment the project version for a
+new production release.
+
+Production is the default, so `./scripts/build.sh` is equivalent to
+`./scripts/build.sh production`. To build one platform, pass the same optional
+build type to `./scripts/build_macos.sh [development|production]` or
+`./scripts/build_windows.sh [development|production]`. Windows development
+builds require the VM's MSVC tools but do not require Inno Setup.
+
+The macOS distribution scripts `./scripts/build_installer.sh` and
+`./scripts/build_dmg.sh` package production Release builds only. Their `.pkg`
+and `.dmg` outputs are saved under
+`exports/production-builds/macOS/v{VERSION}/`.
 
 The Windows installer installs the x64 VST3 to the system VST3 plug-in
 directory. The installer and plugin are unsigned. The build scripts do not
@@ -80,7 +95,10 @@ Build just the Windows plugin and installer through the VM:
 ```
 
 To run the native Windows build directly in a source copy on the VM, execute
-`scripts\build_windows.ps1` from PowerShell.
+`scripts\build_windows.ps1` from PowerShell. Use
+`.\scripts\build_windows.ps1 -BuildType development` for a Debug plugin-only
+build; omit `-BuildType` or set it to `production` for a Release build with an
+installer.
 
 ## Clean Build
 
@@ -104,7 +122,9 @@ The Windows CMake tree is in the VM user's
 - `scripts/build_windows.ps1` — native MSVC and Inno Setup Windows build
 - `installer/windows/` — Windows Inno Setup configuration
 - `build/macOS/` — local macOS generated build tree
-- `exports/production-builds/macOS/`,
-  `exports/production-builds/Windows/` — staged production artifacts
-- `exports/development-builds/` — reserved for staged development artifacts
+- `exports/production-builds/{platform}/v{VERSION}/` — staged production artifacts
+- `exports/development-builds/{platform}/v{VERSION}/` — staged development plugins
+- `daw-testing-mac/scratchpad_CubaseTest/` and
+  `daw-testing-mac/scratchpad_LogicTest.logicx/` — local DAW test projects,
+  ignored by Git
 - `docs/` — build and project documentation

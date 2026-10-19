@@ -9,9 +9,9 @@ VST3 in an `.exe` installer.
 
 The combined `./scripts/build.sh` pipeline builds the Windows x64 VST3 and
 creates
-`exports/production-builds/Windows/ScratchPad_v{VERSION}_Windows.exe` on the
-Parallels Windows 11 VM. It uses native MSVC and Inno Setup 6; it does not need
-MinGW or Wine. SSH must be configured between the Mac and VM. See
+`exports/production-builds/Windows/v{VERSION}/ScratchPad_v{VERSION}_Windows.exe`
+on the Parallels Windows 11 VM. It uses native MSVC and Inno Setup 6; it does
+not need MinGW or Wine. SSH must be configured between the Mac and VM. See
 [BUILD_README.md](./BUILD_README.md) for the VM tool and connection
 requirements.
 
@@ -53,7 +53,7 @@ Build the installer package:
 ./scripts/build_installer.sh
 ```
 
-Output: `exports/production-builds/macOS/ScratchPad_v{VERSION}_macOS.pkg`
+Output: `exports/production-builds/macOS/v{VERSION}/ScratchPad_v{VERSION}_macOS.pkg`
 
 Build the disk image:
 
@@ -61,7 +61,7 @@ Build the disk image:
 ./scripts/build_dmg.sh
 ```
 
-Output: `exports/production-builds/macOS/ScratchPad_v{VERSION}_macOS.dmg`
+Output: `exports/production-builds/macOS/v{VERSION}/ScratchPad_v{VERSION}_macOS.dmg`
 
 The DMG includes the project-root `README.md` as Markdown alongside the
 installer package and uninstaller app.
@@ -81,7 +81,7 @@ installer/
     ├── uninstall.sh
     └── UninstallerApp.applescript
 
-exports/production-builds/macOS/
+exports/production-builds/macOS/v{VERSION}/
 ├── ScratchPad_v{VERSION}_macOS.pkg
 └── ScratchPad_v{VERSION}_macOS.dmg
 ```

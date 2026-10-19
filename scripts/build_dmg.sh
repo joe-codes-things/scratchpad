@@ -8,7 +8,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-PRODUCTION_OUTPUT_DIR="$PROJECT_DIR/exports/production-builds/macOS"
 INSTALLER_DIR="$PROJECT_DIR/installer"
 WORK_DIR="$PROJECT_DIR/dmg_work"
 
@@ -22,7 +21,9 @@ VERSION=$(grep "project(ScratchpadPlugin VERSION" "$PROJECT_DIR/CMakeLists.txt" 
 
 PKG_NAME="ScratchPad_v${VERSION}_macOS.pkg"
 DMG_NAME="ScratchPad_v${VERSION}_macOS.dmg"
+PRODUCTION_OUTPUT_DIR="$PROJECT_DIR/exports/production-builds/macOS/v${VERSION}"
 PKG_PATH="$PRODUCTION_OUTPUT_DIR/$PKG_NAME"
+FINAL_DMG="$PRODUCTION_OUTPUT_DIR/$DMG_NAME"
 README_SRC="$PROJECT_DIR/README.md"
 
 echo "========================================="
@@ -42,6 +43,11 @@ fi
 if [ ! -f "$README_SRC" ]; then
     echo -e "${RED}Error: README not found at:${NC}"
     echo "  $README_SRC"
+    exit 1
+fi
+
+if [ -e "$FINAL_DMG" ]; then
+    echo "Error: Output already exists; refusing to overwrite: $FINAL_DMG" >&2
     exit 1
 fi
 
@@ -100,7 +106,6 @@ echo ""
 echo "Creating DMG..."
 
 TEMP_DMG="$WORK_DIR/temp.dmg"
-FINAL_DMG="$PRODUCTION_OUTPUT_DIR/$DMG_NAME"
 
 # Create a writable DMG from the staged folder
 hdiutil create \

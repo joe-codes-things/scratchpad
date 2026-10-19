@@ -8,7 +8,6 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$PROJECT_DIR/build/macOS"
-PRODUCTION_OUTPUT_DIR="$PROJECT_DIR/exports/production-builds/macOS"
 INSTALLER_DIR="$PROJECT_DIR/installer"
 WORK_DIR="$PROJECT_DIR/installer_work"  # scratch space, cleaned up after
 
@@ -16,6 +15,7 @@ WORK_DIR="$PROJECT_DIR/installer_work"  # scratch space, cleaned up after
 VERSION=$(grep "project(ScratchpadPlugin VERSION" "$PROJECT_DIR/CMakeLists.txt" \
           | sed 's/.*VERSION \([0-9.]*\).*/\1/')
 INSTALLER_NAME="ScratchPad_v${VERSION}_macOS"
+PRODUCTION_OUTPUT_DIR="$PROJECT_DIR/exports/production-builds/macOS/v${VERSION}"
 
 # ── Source plugin paths ──────────────────────────────────────────────────────
 VST3_SRC="$BUILD_DIR/ScratchpadPlugin_artefacts/Release/VST3/ScratchPad.vst3"
@@ -101,6 +101,10 @@ echo -e "${GREEN}AU component pkg built${NC}"
 echo "Building final installer..."
 
 OUTPUT_PKG="$PRODUCTION_OUTPUT_DIR/${INSTALLER_NAME}.pkg"
+if [ -e "$OUTPUT_PKG" ]; then
+    echo "Error: Output already exists; refusing to overwrite: $OUTPUT_PKG" >&2
+    exit 1
+fi
 
 productbuild \
     --distribution "$INSTALLER_DIR/distribution.xml" \

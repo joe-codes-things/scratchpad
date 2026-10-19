@@ -36,9 +36,21 @@ git submodule update --init --recursive
 ./scripts/build.sh
 ```
 
-macOS and Windows artifacts are copied into separate subfolders under
-`exports/production-builds/`. The build scripts do not install plugins,
-request administrator privileges, or change system plugin directories.
+Use `./scripts/build.sh production` for Release builds or
+`./scripts/build.sh development` for Debug builds. Artifacts are placed under
+version-specific folders in `exports/production-builds/` or
+`exports/development-builds/`, respectively. Development builds contain plugin
+bundles only; production builds also create a Windows installer. The separate
+macOS installer scripts package production builds. Existing versioned outputs
+are not overwritten.
+
+The local DAW test projects are
+`daw-testing-mac/scratchpad_CubaseTest/` and
+`daw-testing-mac/scratchpad_LogicTest.logicx/`. Their parent directory is
+ignored by Git, so these local sessions are not part of the published source.
+
+The build scripts do not install plugins, request administrator privileges, or
+change system plugin directories.
 
 Change the plugin version in the root `CMakeLists.txt` when preparing a
 release. See [BUILD_README.md](./BUILD_README.md) for build details and

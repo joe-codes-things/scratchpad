@@ -11,8 +11,7 @@
 !/exports/development-builds/.gitkeep
 /installer_work/
 /dmg_work/
-/scratchpad_CubaseTest/
-/scratchpad_LogicTest.logicx/
+/daw-testing-mac/
 /.kiro/
 /.vscode/
 .DS_Store
