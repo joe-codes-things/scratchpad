@@ -1,8 +1,8 @@
 #!/bin/bash
 # build_dmg.sh
-# Builds the installer and uninstaller apps and packages them with the README into a .dmg.
+# Builds the uninstaller app and packages it with the installer and README into a .dmg.
 # Run after build_installer.sh.
-# Requires: Swift, Xcode Command Line Tools, osacompile, and hdiutil.
+# Requires: osacompile and hdiutil (included with macOS).
 
 set -e
 
@@ -25,7 +25,6 @@ PRODUCTION_OUTPUT_DIR="$PROJECT_DIR/exports/production-builds/macOS/v${VERSION}"
 PKG_PATH="$PRODUCTION_OUTPUT_DIR/$PKG_NAME"
 FINAL_DMG="$PRODUCTION_OUTPUT_DIR/$DMG_NAME"
 README_SRC="$PROJECT_DIR/README.md"
-INSTALLER_APP_SOURCE="$INSTALLER_DIR/macOS/ScratchPadInstaller.swift"
 
 echo "========================================="
 echo "ScratchPad DMG Builder"
@@ -47,13 +46,7 @@ if [ ! -f "$README_SRC" ]; then
     exit 1
 fi
 
-if [ ! -f "$INSTALLER_APP_SOURCE" ]; then
-    echo -e "${RED}Error: Installer app source not found at:${NC}"
-    echo "  $INSTALLER_APP_SOURCE"
-    exit 1
-fi
-
-for command in swiftc lipo codesign osacompile hdiutil; do
+for command in osacompile hdiutil; do
     if ! command -v "$command" >/dev/null 2>&1; then
         echo -e "${RED}Error: Required command '$command' was not found.${NC}" >&2
         exit 1
@@ -68,58 +61,6 @@ fi
 # ── Clean work dir ───────────────────────────────────────────────────────────
 rm -rf "$WORK_DIR"
 mkdir -p "$WORK_DIR/dmg_contents"
-
-# ── Build format-selection installer app ──────────────────────────────────────
-echo "Building ScratchPad Installer.app..."
-
-INSTALLER_APP="$WORK_DIR/ScratchPad Installer.app"
-INSTALLER_APP_CONTENTS="$INSTALLER_APP/Contents"
-mkdir -p "$INSTALLER_APP_CONTENTS/MacOS" "$INSTALLER_APP_CONTENTS/Resources"
-
-swiftc -target arm64-apple-macos11.0 \
-    "$INSTALLER_APP_SOURCE" \
-    -o "$WORK_DIR/ScratchPadInstaller.arm64"
-swiftc -target x86_64-apple-macos11.0 \
-    "$INSTALLER_APP_SOURCE" \
-    -o "$WORK_DIR/ScratchPadInstaller.x86_64"
-lipo -create \
-    "$WORK_DIR/ScratchPadInstaller.arm64" \
-    "$WORK_DIR/ScratchPadInstaller.x86_64" \
-    -output "$INSTALLER_APP_CONTENTS/MacOS/ScratchPadInstaller"
-
-cat > "$INSTALLER_APP_CONTENTS/Info.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>en</string>
-    <key>CFBundleExecutable</key>
-    <string>ScratchPadInstaller</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.ninelivesaudio.scratchpad.installer</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>ScratchPad Installer</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$VERSION</string>
-    <key>CFBundleVersion</key>
-    <string>$VERSION</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>11.0</string>
-    <key>NSHighResolutionCapable</key>
-    <true/>
-    <key>NSPrincipalClass</key>
-    <string>NSApplication</string>
-</dict>
-</plist>
-PLIST
-
-cp "$PKG_PATH" "$INSTALLER_APP_CONTENTS/Resources/ScratchPad.pkg"
-codesign --force --sign - --timestamp=none "$INSTALLER_APP"
 
 # ── Build Uninstaller.app ────────────────────────────────────────────────────
 echo "Building Uninstaller.app..."
@@ -155,8 +96,8 @@ echo "Staging DMG contents..."
 
 DMG_STAGE="$WORK_DIR/dmg_contents"
 
-# Format-selection installer app
-cp -R "$INSTALLER_APP" "$DMG_STAGE/ScratchPad Installer.app"
+# Installer package
+cp "$PKG_PATH" "$DMG_STAGE/$PKG_NAME"
 
 # Uninstaller app
 cp -R "$APP_STAGE" "$DMG_STAGE/ScratchPad Uninstaller.app"

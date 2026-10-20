@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(ScratchpadPlugin VERSION 0.0.26 LANGUAGES C CXX)
+project(ScratchpadPlugin VERSION 0.0.27 LANGUAGES C CXX)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/JUCE_framework JUCE)
 

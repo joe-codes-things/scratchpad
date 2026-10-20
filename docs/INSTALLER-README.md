@@ -38,13 +38,13 @@ The ZIP contains `ScratchPad_v{VERSION}_Windows.exe` and `README.md`.
 - **AU Plugin**: Installs to `/Library/Audio/Plug-Ins/Components/`
 - **Installer package**: Supports choosing VST3, AU, or both with Installer's
   Customize pane
-- **Disk image**: Contains a launcher with format checkboxes, an uninstaller,
-  and the project README
+- **Disk image**: Contains the installer package, uninstaller, and project
+  README
 
 ### Prerequisites
 
 - Xcode Command Line Tools (includes `pkgbuild`, `productbuild`, `hdiutil`,
-  `osacompile`, `swiftc`, and `lipo`)
+  and `osacompile`)
 - macOS plugins built in `build/macOS/ScratchpadPlugin_artefacts/Release/`
 
 ### Build
@@ -71,12 +71,10 @@ Build the disk image:
 
 Output: `exports/production-builds/macOS/v{VERSION}/ScratchPad_v{VERSION}_macOS.dmg`
 
-The DMG includes the project-root `README.md` as Markdown alongside the
-`ScratchPad Installer.app` and `ScratchPad Uninstaller.app`. Launch
-`ScratchPad Installer.app` to see the VST3 and AU checkboxes before proceeding;
-it requests administrator authorization to install the selected formats. The
-standalone `.pkg` also supports format selection through Installer's Customize
-pane.
+The DMG includes the installer package, `ScratchPad Uninstaller.app`, and the
+project-root `README.md` as Markdown. To choose which plugin formats to
+install, open the package and click **Customize** (or **Custom Install**) on
+the Installation Type screen, then select VST3, AU, or both.
 
 ### macOS File Structure
 
@@ -89,8 +87,6 @@ installer/
 ├── distribution.xml
 ├── welcome.html
 ├── license.html
-├── macOS/
-│   └── ScratchPadInstaller.swift
 └── uninstaller/
     ├── uninstall.sh
     └── UninstallerApp.applescript
@@ -100,8 +96,8 @@ exports/production-builds/macOS/v{VERSION}/
 └── ScratchPad_v{VERSION}_macOS.dmg
 ```
 
-The DMG contains `ScratchPad Installer.app`, `ScratchPad Uninstaller.app`, and
-`README.md`. The installer app embeds the versioned package.
+The DMG contains `ScratchPad_v{VERSION}_macOS.pkg`,
+`ScratchPad Uninstaller.app`, and `README.md`.
 
 ## Versioned Installation
 
@@ -128,11 +124,10 @@ administrator password when prompted.
 The version is read from the root `CMakeLists.txt`:
 
 ```cmake
-project(ScratchpadPlugin VERSION 0.0.26 LANGUAGES C CXX)
+project(ScratchpadPlugin VERSION 0.0.27 LANGUAGES C CXX)
 ```
 
-Update the format-selection launcher in `installer/macOS/ScratchPadInstaller.swift`.
-Update native package UI text in `installer/welcome.html` and
+Update macOS package UI text in `installer/welcome.html` and
 `installer/license.html`. Change macOS install locations in
 `installer/distribution.xml` and `scripts/build_installer.sh`. Change the
 Windows installer in `installer/windows/ScratchPad.iss`.
