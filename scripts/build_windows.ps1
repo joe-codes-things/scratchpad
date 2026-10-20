@@ -20,6 +20,11 @@ if (-not $versionMatch) {
 }
 $version = $versionMatch.Matches[0].Groups[1].Value
 $artifactsDir = Join-Path $artifactsBaseDir "v$version"
+$pluginFileName = if ($BuildType -eq "development") {
+    "nla_scratchpad_dev.vst3"
+} else {
+    "nla_scratchpad.vst3"
+}
 if (Test-Path -LiteralPath $artifactsDir) {
     throw "Output already exists; refusing to overwrite: $artifactsDir"
 }
@@ -95,7 +100,7 @@ if (-not (Test-Path $pluginSource -PathType Container)) {
 }
 
 New-Item -ItemType Directory -Path $artifactsDir | Out-Null
-$pluginDestination = Join-Path $artifactsDir "nla_scratchpad.vst3"
+$pluginDestination = Join-Path $artifactsDir $pluginFileName
 Copy-Item -LiteralPath $pluginSource -Destination $pluginDestination -Recurse
 
 if ($BuildType -eq "production") {

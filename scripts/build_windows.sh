@@ -114,6 +114,11 @@ if [[ -z "$VERSION" ]]; then
     exit 1
 fi
 
+PLUGIN_FILE_NAME=nla_scratchpad.vst3
+if [[ "$BUILD_TYPE" == development ]]; then
+    PLUGIN_FILE_NAME=nla_scratchpad_dev.vst3
+fi
+
 OUTPUT_DIR="$PROJECT_ROOT/exports/${BUILD_TYPE}-builds/Windows/v${VERSION}"
 if [[ -e "$OUTPUT_DIR" ]]; then
     echo "Error: Output already exists; refusing to overwrite: $OUTPUT_DIR" >&2
@@ -167,7 +172,7 @@ $versionMatch = Select-String -Path (Join-Path $workspace "CMakeLists.txt") -Pat
 if (-not $versionMatch) { throw "Could not read project version after the Windows build." }
 $version = $versionMatch.Matches[0].Groups[1].Value
 $artifacts = Join-Path $workspace "exports\${buildType}-builds\Windows\v${version}"
-$plugin = Join-Path $artifacts "nla_scratchpad.vst3"
+$plugin = Join-Path $artifacts "__PLUGIN_FILE_NAME__"
 if (-not (Test-Path -LiteralPath $plugin -PathType Container)) {
     throw "Expected Windows plugin was not produced."
 }
@@ -189,12 +194,13 @@ POWERSHELL
 )
 BUILD_SCRIPT="${BUILD_SCRIPT//__BUILD_TYPE__/$BUILD_TYPE}"
 BUILD_SCRIPT="${BUILD_SCRIPT//__REMOTE_TRANSFER__/$REMOTE_TRANSFER}"
+BUILD_SCRIPT="${BUILD_SCRIPT//__PLUGIN_FILE_NAME__/$PLUGIN_FILE_NAME}"
 BUILD_ENCODED="$(encode_powershell "$BUILD_SCRIPT")"
 REMOTE_TRANSFER_CREATED=1
 ssh "${ssh_options[@]}" "$REMOTE" powershell.exe -NoProfile -EncodedCommand "$BUILD_ENCODED"
 
 mkdir -p "$OUTPUT_DIR"
-scp "${ssh_options[@]}" -r "$REMOTE:$REMOTE_TRANSFER/nla_scratchpad.vst3" "$OUTPUT_DIR/"
+scp "${ssh_options[@]}" -r "$REMOTE:$REMOTE_TRANSFER/$PLUGIN_FILE_NAME" "$OUTPUT_DIR/"
 
 if [[ "$BUILD_TYPE" == production ]]; then
     INSTALLER="$OUTPUT_DIR/ScratchPad_v${VERSION}_Windows.exe"
@@ -205,13 +211,13 @@ if [[ "$BUILD_TYPE" == production ]]; then
     fi
 fi
 
-if [[ ! -d "$OUTPUT_DIR/nla_scratchpad.vst3" ]]; then
+if [[ ! -d "$OUTPUT_DIR/$PLUGIN_FILE_NAME" ]]; then
     echo "Error: Expected Windows artifacts were not retrieved." >&2
     exit 1
 fi
 
 echo "Windows $BUILD_TYPE artifacts built in the Parallels VM:"
-echo "  VST3: $OUTPUT_DIR/nla_scratchpad.vst3"
+echo "  VST3: $OUTPUT_DIR/$PLUGIN_FILE_NAME"
 if [[ "$BUILD_TYPE" == production ]]; then
     echo "  Installer: $INSTALLER"
 fi

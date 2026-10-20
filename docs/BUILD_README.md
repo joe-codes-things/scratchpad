@@ -45,6 +45,9 @@ and JUCE, but use independent generated build state and outputs:
 Use `./scripts/build.sh development` to build Debug plugins on both platforms.
 This stages VST3 and AU development plugins under
 `exports/development-builds/{platform}/v{VERSION}/`; no installer is produced.
+Development plugin bundles have a `_dev` suffix so they are distinguishable
+from production bundles (for example, `nla_scratchpad_dev.component` and
+`nla_scratchpad_dev.vst3`). Production bundle names do not include that suffix.
 The production pipeline uses Release configuration and writes only beneath
 `exports/production-builds/`. If the versioned destination already exists, a
 build stops rather than overwriting it. Increment the project version for a

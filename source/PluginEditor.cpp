@@ -13,6 +13,8 @@ NotepadPluginAudioProcessorEditor::NotepadPluginAudioProcessorEditor (NotepadPlu
     
     setSize (800, 500);  // Expanded width to accommodate right sidebar
     setResizeLimits (600, 250, 1400, 1000);  // Min width increased for new layout
+    if (juce::PluginHostType::getPluginLoadedAs() == juce::AudioProcessor::wrapperType_AudioUnit)
+        setResizable (true, true);
     
     // Configure gear button
     gearButton_ = std::make_unique<GearButton> (juce::Colour (0xff6b778c), juce::Colour (0xffa6b3c7));

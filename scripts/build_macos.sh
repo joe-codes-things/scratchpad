@@ -38,6 +38,11 @@ if [[ -e "$OUTPUT_DIR" ]]; then
     exit 1
 fi
 
+PLUGIN_NAME=nla_scratchpad
+if [[ "$BUILD_TYPE" == "development" ]]; then
+    PLUGIN_NAME="${PLUGIN_NAME}_dev"
+fi
+
 mkdir -p "$BUILD_DIR"
 cmake -S "$PROJECT_ROOT" -B "$BUILD_DIR" -G Xcode
 
@@ -48,8 +53,8 @@ xcodebuild -project "$BUILD_DIR/ScratchpadPlugin.xcodeproj" \
 
 VST3_SRC="$BUILD_DIR/ScratchpadPlugin_artefacts/$BUILD_CONFIGURATION/VST3/ScratchPad.vst3"
 AU_SRC="$BUILD_DIR/ScratchpadPlugin_artefacts/$BUILD_CONFIGURATION/AU/ScratchPad.component"
-VST3_DEST="$OUTPUT_DIR/nla_scratchpad.vst3"
-AU_DEST="$OUTPUT_DIR/nla_scratchpad.component"
+VST3_DEST="$OUTPUT_DIR/${PLUGIN_NAME}.vst3"
+AU_DEST="$OUTPUT_DIR/${PLUGIN_NAME}.component"
 
 if [[ ! -d "$VST3_SRC" || ! -d "$AU_SRC" ]]; then
     echo "Error: Expected macOS plugin outputs were not produced." >&2

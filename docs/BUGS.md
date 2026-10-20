@@ -24,20 +24,13 @@ Resolved Bugs section rather than deleting them.
   - Check whether title label dimensions or positioning contribute to the
     stretched appearance before changing the font size or layout.
 
+## Resolved Bugs
+
 ### B002 — AU editor window resizing in Logic
 
-- **Status:** Open
+- **Status:** Resolved
 - **Platform:** macOS AU in Logic
-- **Issue:** The Windows VST3 editor resizes, but the macOS AU editor window
-  does not resize in Logic. Resizing is intended to be supported for both
-  formats.
-- **Ideas to investigate:**
-  - Reproduce the behavior in Logic and compare it with the macOS VST3 editor.
-  - Trace whether Logic's AU wrapper accepts and propagates editor size
-    changes, given that the editor already configures resize limits.
-  - Check the JUCE AU wrapper's resize behavior and any host-specific
-    constraints before changing the editor's sizing configuration.
-  - Verify the final behavior in Logic for both user-initiated resizing and
-    layout updates after a resize.
-
-## Resolved Bugs
+- **Issue:** The macOS AU editor window did not resize in Logic 12, although
+  VST3 resizing worked in Cubase 15 on macOS and Windows.
+- **Resolution:** Enabled the editor's bottom-right resize handle only when
+  hosted as AU. Confirmed working in Logic; VST3 behavior remains unchanged.

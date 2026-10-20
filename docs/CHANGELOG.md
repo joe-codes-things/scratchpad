@@ -1,5 +1,11 @@
 # ScratchPad Plugin Changelog
 
+## v0.0.25 (2026-10-19)
+- Enabled the editor's bottom-right resize handle for the macOS AU format,
+  resolving AU resizing in Logic while leaving VST3 resizing behavior unchanged.
+- Added `_dev` suffixes to development plugin bundle filenames to distinguish
+  them from production bundles.
+
 ## v0.0.24 (2026-10-16)
 - Updated the release version and refreshed VST3, AU, PKG, and DMG artifacts.
 - Updated README version and branding.
