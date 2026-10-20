@@ -41,6 +41,7 @@ and JUCE, but use independent generated build state and outputs:
 - `exports/production-builds/macOS/v{VERSION}/nla_scratchpad.component`
 - `exports/production-builds/Windows/v{VERSION}/nla_scratchpad.vst3`
 - `exports/production-builds/Windows/v{VERSION}/ScratchPad_v{VERSION}_Windows.exe`
+- `exports/production-builds/Windows/v{VERSION}/ScratchPad_v{VERSION}_Windows.zip`
 
 Use `./scripts/build.sh development` to build Debug plugins on both platforms.
 This stages VST3 and AU development plugins under
@@ -65,9 +66,11 @@ and `.dmg` outputs are saved under
 `exports/production-builds/macOS/v{VERSION}/`.
 
 The Windows installer installs the x64 VST3 to the system VST3 plug-in
-directory. The installer and plugin are unsigned. The build scripts do not
-install plugins or use `sudo`; to use a plugin without the installer, copy the
-bundle to a directory scanned by your DAW.
+directory. The Windows ZIP contains the installer and README; uninstall is
+handled by the Windows app settings and the installer-generated uninstaller.
+The installer and plugin are unsigned. The build scripts do not install
+plugins or use `sudo`; to use a plugin without the installer, copy the bundle
+to a directory scanned by your DAW.
 
 The Windows VM must be running and SSH-reachable whenever the combined build
 runs. Put its address, account name, and private-key path in the ignored

@@ -1,5 +1,9 @@
 # ScratchPad Plugin Changelog
 
+## v0.0.26 (2026-10-19)
+- Added a Windows ZIP distribution containing the installer and README.
+- Added a macOS installer launcher with upfront AU/VST3 format checkboxes.
+
 ## v0.0.25 (2026-10-19)
 - Enabled the editor's bottom-right resize handle for the macOS AU format,
   resolving AU resizing in Logic while leaving VST3 resizing behavior unchanged.

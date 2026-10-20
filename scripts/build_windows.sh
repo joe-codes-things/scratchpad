@@ -70,6 +70,11 @@ for command in ssh scp tar iconv; do
     fi
 done
 
+if [[ "$BUILD_TYPE" == "production" ]] && ! command -v zip >/dev/null 2>&1; then
+    echo "Error: Required command 'zip' was not found." >&2
+    exit 1
+fi
+
 if [[ -n "$SSH_KEY" && ! -f "$SSH_KEY" ]]; then
     echo "Error: Windows VM SSH key not found: $SSH_KEY" >&2
     exit 1
@@ -209,6 +214,13 @@ if [[ "$BUILD_TYPE" == production ]]; then
         echo "Error: Expected Windows installer was not retrieved." >&2
         exit 1
     fi
+
+    WINDOWS_ZIP="$OUTPUT_DIR/ScratchPad_v${VERSION}_Windows.zip"
+    zip -j "$WINDOWS_ZIP" "$INSTALLER" "$PROJECT_ROOT/README.md"
+    if [[ ! -f "$WINDOWS_ZIP" ]]; then
+        echo "Error: Expected Windows ZIP distribution was not created." >&2
+        exit 1
+    fi
 fi
 
 if [[ ! -d "$OUTPUT_DIR/$PLUGIN_FILE_NAME" ]]; then
@@ -220,4 +232,5 @@ echo "Windows $BUILD_TYPE artifacts built in the Parallels VM:"
 echo "  VST3: $OUTPUT_DIR/$PLUGIN_FILE_NAME"
 if [[ "$BUILD_TYPE" == production ]]; then
     echo "  Installer: $INSTALLER"
+    echo "  ZIP: $WINDOWS_ZIP"
 fi
